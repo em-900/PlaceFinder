@@ -4,17 +4,6 @@ import L from 'leaflet';
 
 const colors = ["red", "blue", "green", "orange", "purple", "brown", "pink", "cyan", "yellow", "lime", "indigo", "teal", "maroon", "navy", "olive", "coral"];
 
-function MapCenterTracker({ onCenterChange }) {
-  useMapEvents({
-    moveend: (e) => {
-      const center = e.target.getCenter();
-      if (center) {
-        onCenterChange({ lat: center.lat, lng: center.lng });
-      }
-    },
-  });
-  return null;
-}
 
 export default function RestaurantMap({ restaurants, onCenterChange }) {
   // Use a single color for all markers since we only have one list
@@ -36,7 +25,6 @@ export default function RestaurantMap({ restaurants, onCenterChange }) {
         style={{ height: '100%', width: '100%' }}
         scrollWheelZoom={true}
       >
-        <MapCenterTracker onCenterChange={onCenterChange} />
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution="&copy; OpenStreetMap contributors"
@@ -47,17 +35,17 @@ export default function RestaurantMap({ restaurants, onCenterChange }) {
             position={[place.lat, place.lng]}
             icon={getIcon('red')}
           >
-          <Popup>
-            <strong>{place.Title}</strong><br />
-            {place.address || ''}<br />
-            Rating: {place.rating || 'N/A'} ({place.user_ratings_total || 0})<br />
-            {place.price_start && (
-              <span>
-                Price: ${place.price_start}{place.price_end && place.price_end !== place.price_start ? '-' + place.price_end : ''} CAD<br />
-              </span>
-            )}
-            {place.URL && <a href={place.URL} target="_blank" rel="noreferrer">Google Maps</a>}
-          </Popup>
+            <Popup>
+              <strong>{place.Title}</strong><br />
+              {place.address || ''}<br />
+              Rating: {place.rating || 'N/A'} ({place.user_ratings_total || 0})<br />
+              {place.price_start && (
+                <span>
+                  Price: ${place.price_start}{place.price_end && place.price_end !== place.price_start ? '-' + place.price_end : ''} CAD<br />
+                </span>
+              )}
+              {place.URL && <a href={place.URL} target="_blank" rel="noreferrer">Google Maps</a>}
+            </Popup>
           </Marker>
         ))}
       </MapContainer>

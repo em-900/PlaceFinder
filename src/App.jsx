@@ -6,7 +6,6 @@ import RestaurantMap from './components/RestaurantMap';
 export default function App() {
   const { allPlaces, loading } = useRestaurantData();
   const [filters, setFilters] = useState({ maxPrice: null, minRating: null, selectedType: null });
-  const [mapCenter, setMapCenter] = useState({ lat: 43.65, lng: -79.38 });
 
   // Filter restaurants based on max price, min rating, and selected type
   const filtered = allPlaces.filter(p => {
@@ -16,7 +15,7 @@ export default function App() {
         return false;
       }
     }
-    
+
     // Check max price
     if (filters.maxPrice) {
       // If place has no price data and we're filtering by price, exclude it
@@ -24,7 +23,7 @@ export default function App() {
       // Check if the start price (lowest price) is within budget
       if (p.price_start > filters.maxPrice) return false;
     }
-    
+
     // Check min rating
     if (filters.minRating) {
       // If place has no rating and we're filtering by rating, exclude it
@@ -32,7 +31,7 @@ export default function App() {
       // Check if rating meets minimum
       if (p.rating < filters.minRating) return false;
     }
-    
+
     return true;
   });
 
@@ -56,9 +55,9 @@ export default function App() {
         allPlaces={allPlaces}
         filteredCount={filtered.length}
       />
-      
+
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <RestaurantMap restaurants={filtered} onCenterChange={setMapCenter} />
+        <RestaurantMap restaurants={filtered} />
       </div>
     </div>
   );
