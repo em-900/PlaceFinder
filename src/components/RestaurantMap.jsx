@@ -1,14 +1,11 @@
-import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 
-const colors = ["red", "blue", "green", "orange", "purple", "brown", "pink", "cyan", "yellow", "lime", "indigo", "teal", "maroon", "navy", "olive", "coral"];
 
-
-export default function RestaurantMap({ restaurants, onCenterChange }) {
+export default function RestaurantMap({ restaurants }) {
   // Use a single color for all markers since we only have one list
   const colorMap = { 'places.json': 'red' };
-
+  //Making icon
   const getIcon = (color) =>
     L.divIcon({
       className: 'custom-marker',

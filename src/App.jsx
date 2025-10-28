@@ -5,13 +5,22 @@ import RestaurantMap from './components/RestaurantMap';
 
 export default function App() {
   const { allPlaces, loading } = useRestaurantData();
-  const [filters, setFilters] = useState({ maxPrice: null, minRating: null, selectedType: null });
+  const [filters, setFilters] = useState({ maxPrice: null, minRating: null, selectedType: null, searchTerm: "" });
 
   // Filter restaurants based on max price, min rating, and selected type
   const filtered = allPlaces.filter(p => {
     // Check selected type (must be in the types array)
     if (filters.selectedType) {
       if (!p.types || !Array.isArray(p.types) || !p.types.includes(filters.selectedType)) {
+        return false;
+      }
+    }
+    // Check if search term is in title or address
+    if (filters.searchTerm) {
+      const searchLower = filters.searchTerm.toLowerCase();
+      const titleMatch = p.Title?.toLowerCase().includes(searchLower) || false;
+      const addressMatch = p.address?.toLowerCase().includes(searchLower) || false;
+      if (!titleMatch && !addressMatch) {
         return false;
       }
     }
@@ -43,6 +52,7 @@ export default function App() {
     );
   }
 
+
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', fontFamily: 'sans-serif', background: '#ffffff' }}>
       <FilterSidebar
@@ -52,6 +62,8 @@ export default function App() {
         setMinRating={(value) => setFilters({ ...filters, minRating: value || null })}
         selectedType={filters.selectedType}
         setSelectedType={(value) => setFilters({ ...filters, selectedType: value || null })}
+        searchTerm={filters.searchTerm}
+        setSearchTerm={(value) => setFilters({ ...filters, searchTerm: value || '' })}
         allPlaces={allPlaces}
         filteredCount={filtered.length}
       />

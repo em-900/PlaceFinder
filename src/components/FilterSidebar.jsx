@@ -2,21 +2,23 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { formatSnakeCase } from '../utils/helpers';
 import { useDebounce } from '../hooks/useDebounce';
 
-export default function FilterSidebar({ 
+export default function FilterSidebar({
   maxPrice,
   setMaxPrice,
   minRating,
   setMinRating,
-  allPlaces, 
+  allPlaces,
   filteredCount,
   selectedType,
-  setSelectedType
+  setSelectedType,
+  searchTerm,
+  setSearchTerm
 }) {
   const [minRatingInput, setMinRatingInput] = useState('');
   const [typeSearch, setTypeSearch] = useState('');
   const debouncedTypeSearch = useDebounce(typeSearch, 300);
   const searchContainerRef = useRef(null);
-  
+
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
@@ -24,16 +26,16 @@ export default function FilterSidebar({
         setTypeSearch('');
       }
     }
-    
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-  
+
   // Extract all unique types from places.types arrays and format them
   const allTypes = useMemo(() => {
     const typeSet = new Set();
     const typeCounts = {};
-    
+
     allPlaces.forEach(place => {
       if (place.types && Array.isArray(place.types)) {
         place.types.forEach(type => {
@@ -42,7 +44,7 @@ export default function FilterSidebar({
         });
       }
     });
-    
+
     return Array.from(typeSet)
       .map(type => ({
         value: type,
@@ -51,19 +53,37 @@ export default function FilterSidebar({
       }))
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [allPlaces]);
-  
+
   // Filter types based on debounced search input
   const filteredTypes = useMemo(() => {
     if (!debouncedTypeSearch) return [];
     const searchLower = debouncedTypeSearch.toLowerCase();
-    return allTypes.filter(type => 
+    return allTypes.filter(type =>
       type.label.toLowerCase().includes(searchLower)
     ).slice(0, 10); // Limit to top 10 matches
   }, [allTypes, debouncedTypeSearch]);
-  
+
   return (
     <div style={{ width: '280px', padding: '1.5rem', overflowY: 'auto', background: '#ffffff', color: '#000', paddingRight: '2rem' }}>
       <h2 style={{ fontWeight: 'bold' }}>PlaceFinder</h2>
+
+      <h4 style={{ fontWeight: 'bold', marginTop: '1.5rem' }}>Search Restaurants</h4>
+      <input
+        type="text"
+        value={searchTerm || ''}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        placeholder="Search by name or address..."
+        style={{
+          width: '100%',
+          padding: '8px',
+          background: '#f0f0f0',
+          color: '#000',
+          border: '1px solid #ccc',
+          borderRadius: '4px',
+          fontSize: '14px',
+          marginTop: '4px'
+        }}
+      />
 
       <h4 style={{ fontWeight: 'bold', marginTop: '1.5rem' }}>Type Filter</h4>
       <div ref={searchContainerRef} style={{ position: 'relative' }}>
@@ -72,11 +92,11 @@ export default function FilterSidebar({
           value={typeSearch}
           onChange={(e) => setTypeSearch(e.target.value)}
           placeholder="Type to search for type..."
-          style={{ 
-            width: '100%', 
-            padding: '8px', 
-            background: '#f0f0f0', 
-            color: '#000', 
+          style={{
+            width: '100%',
+            padding: '8px',
+            background: '#f0f0f0',
+            color: '#000',
             border: '1px solid #ccc',
             borderRadius: '4px',
             fontSize: '14px',
@@ -130,20 +150,20 @@ export default function FilterSidebar({
         )}
       </div>
       {selectedType && (
-        <div style={{ 
-          marginTop: '4px', 
-          padding: '4px 8px', 
-          background: '#e3f2fd', 
+        <div style={{
+          marginTop: '4px',
+          padding: '4px 8px',
+          background: '#e3f2fd',
           fontSize: '12px',
           display: 'inline-block'
         }}>
           Selected: {allTypes.find(t => t.value === selectedType)?.label}
-          <button 
+          <button
             onClick={() => setSelectedType(null)}
-            style={{ 
-              marginLeft: '8px', 
-              background: 'none', 
-              border: 'none', 
+            style={{
+              marginLeft: '8px',
+              background: 'none',
+              border: 'none',
               color: '#1976d2',
               cursor: 'pointer',
               textDecoration: 'underline'
@@ -164,13 +184,23 @@ export default function FilterSidebar({
           const val = e.target.value;
           setMaxPrice(val === '' ? null : Number(val));
         }}
-        style={{ width: '100%', padding: '8px', background: '#f0f0f0', color: '#000', border: '1px solid #ccc', marginTop: '2px', borderRadius: '4px',
+        style={{
+          width: '100%',
+          padding: '8px',
+          background: '#f0f0f0',
+          color: '#000',
+          border: '1px solid #ccc',
+          marginTop: '4px',
+          borderRadius: '4px'
         }}
       />
 
       <h4 style={{ fontWeight: 'bold', marginTop: '1.5rem' }}>Min Rating</h4>
       <input
-        type="text"
+        type="number"
+        step="0.1"
+        min="0"
+        max="5"
         value={minRatingInput || ''}
         placeholder="Min rating (e.g., 4.0)"
         onChange={(e) => {
@@ -178,7 +208,14 @@ export default function FilterSidebar({
           setMinRatingInput(val);
           setMinRating(val === '' ? null : Number(val));
         }}
-        style={{ width: '100%', padding: '8px', background: '#f0f0f0', color: '#000', border: '1px solid #ccc', marginTop: '4px', marginBottom: '4px', borderRadius: '4px',
+        style={{
+          width: '100%',
+          padding: '8px',
+          background: '#f0f0f0',
+          color: '#000',
+          border: '1px solid #ccc',
+          marginTop: '4px',
+          borderRadius: '4px'
         }}
       />
       {minRating && (

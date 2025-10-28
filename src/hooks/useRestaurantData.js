@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const fileList = ["places.json"];
+// const fileList = ["places.json"];
 
 export function useRestaurantData() {
   const [allPlaces, setAllPlaces] = useState([]);
@@ -53,5 +53,5 @@ export function useRestaurantData() {
   return { allPlaces, loading };
 }
 
-export { fileList };
+// export { fileList };
 
